@@ -43,8 +43,8 @@ namespace MVC5AdminPortal.Controllers
         {
             if (ModelState.IsValid)
             {
-                UserManager UM = new UserManager();
-                string password = UM.GetUserPassword(ulv.LoginName);
+                UserManager um = new UserManager();
+                string password = um.GetUserPassword(ulv.LoginName);
 
                 if (string.IsNullOrEmpty(password))
                 {

@@ -1,4 +1,6 @@
-﻿using MVC5AdminPortal.Security;
+﻿using MVC5AdminPortal.Models.EntityManager;
+using MVC5AdminPortal.Models.ViewModel;
+using MVC5AdminPortal.Security;
 using System.Web.Mvc;
 
 namespace MVC5AdminPortal.Controllers
@@ -25,6 +27,20 @@ namespace MVC5AdminPortal.Controllers
 
         public ActionResult UnAuthorized()
         {
+            return View();
+        }
+
+        [AuthorizeRole("Admin")]
+        public ActionResult ManageUserPartial()
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                string loginName = User.Identity.Name;
+                UserManager um = new UserManager();
+                UserDataView udv = um.GetUserDataView(loginName);
+                return PartialView(udv);
+            }
+
             return View();
         }
     }

@@ -1,6 +1,7 @@
 ﻿using MVC5AdminPortal.Models.DB;
 using MVC5AdminPortal.Models.ViewModel;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace MVC5AdminPortal.Models.EntityManager
@@ -92,5 +93,103 @@ namespace MVC5AdminPortal.Models.EntityManager
                 return false;
             }
         }
+
+        public List<LookupAvailableRole> GetAllRoles()
+        {
+            using (DemoDBEntities db = new DemoDBEntities())
+            {
+                var roles = db.LOOKUPRoles.Select(o => new LookupAvailableRole
+                {
+                    LookupRoleId = o.LOOKUPRoleID,
+                    RoleName = o.RoleName,
+                    RoleDescription = o.RoleDescription
+                }).ToList();
+
+                return roles;
+            }
+        }
+
+        public int GetUserId(string loginName)
+        {
+            using (DemoDBEntities db = new DemoDBEntities())
+            {
+                var user = db.SYSUsers.Where(o => o.LoginName.Equals(loginName));
+                if (user.Any())
+                    return user.FirstOrDefault().SYSUserID;
+            }
+            return 0;
+        }
+
+        public List<UserProfileView> GetAllUserProfiles()
+        {
+            List<UserProfileView> profiles = new List<UserProfileView>();
+            using (DemoDBEntities db = new DemoDBEntities())
+            {
+                var users = db.SYSUsers.ToList();
+                foreach (var u in db.SYSUsers)
+                {
+                    var upv = new UserProfileView
+                    {
+                        SYSUserID = u.SYSUserID,
+                        LoginName = u.LoginName,
+                        Password = u.PasswordEncryptedText
+                    };
+                    var sup = db.SYSUserProfiles.Find(u.SYSUserID);
+                    if (sup != null)
+                    {
+                        upv.FirstName = sup.FirstName;
+                        upv.LastName = sup.LastName;
+                        upv.Gender = sup.Gender;
+                    }
+
+                    var sur = db.SYSUserRoles.Where(o => o.SYSUserID.Equals(u.SYSUserID));
+                    if (sur.Any())
+                    {
+                        var userRole = sur.FirstOrDefault();
+                        upv.LOOKUPRoleID = userRole.LOOKUPRoleID;
+                        upv.RoleName = userRole.LOOKUPRole.RoleName;
+                        upv.IsRoleActive = userRole.IsActive;
+                    }
+                    profiles.Add(upv);
+                }
+            }
+
+            return profiles;
+        }
+
+        public UserDataView GetUserDataView(string loginName)
+        {
+            UserDataView udv = new UserDataView();
+            List<UserProfileView> profiles = GetAllUserProfiles();
+            List<LookupAvailableRole> roles = GetAllRoles();
+            int? userAssignedRoleID = 0, userID = 0;
+            string userGender = string.Empty;
+            userID = GetUserId(loginName);
+
+            using (DemoDBEntities db = new DemoDBEntities())
+            {
+                userAssignedRoleID = db.SYSUserRoles.Where(o => o.SYSUserID == userID)?.FirstOrDefault().LOOKUPRoleID;
+                userGender = db.SYSUserProfiles.Where(o => o.SYSUserID == userID)?.FirstOrDefault().Gender;
+            }
+
+            List<Gender> genders = new List<Gender>();
+            genders.Add(new Gender { Text = "Male", Value = "M" });
+            genders.Add(new Gender { Text = "Female", Value = "F" });
+            udv.UserProfile = profiles;
+            udv.UserRoles = new UserRoles
+            {
+                SelectedRoleID = userAssignedRoleID,
+                UserRoleList = roles
+            };
+            udv.UserGender = new UserGender
+            {
+                SelectedGender = userGender,
+                Gender =
+           genders
+            };
+            return udv;
+        }
+
     }
 }
+
