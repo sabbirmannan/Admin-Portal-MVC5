@@ -32,5 +32,45 @@ namespace MVC5AdminPortal.Controllers
             }
             return View();
         }
+
+        public ActionResult LogIn()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult LogIn(UserLoginView ulv, string returnUrl)
+        {
+            if (ModelState.IsValid)
+            {
+                UserManager UM = new UserManager();
+                string password = UM.GetUserPassword(ulv.LoginName);
+
+                if (string.IsNullOrEmpty(password))
+                {
+                    ModelState.AddModelError("", "The User Login or Password Provided is Incorrect");
+                }
+                else
+                {
+                    if (ulv.Password.Equals(password))
+                    {
+                        FormsAuthentication.SetAuthCookie(ulv.LoginName, false);
+                        return RedirectToAction("Welcome", "Home");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "The Password Provided is Incorrect");
+                    }
+                }
+            }
+            return View(ulv);
+        }
+
+        [Authorize]
+        public ActionResult SignOut()
+        {
+            FormsAuthentication.SignOut();
+            return RedirectToAction("Index", "Home");
+        }
     }
 }

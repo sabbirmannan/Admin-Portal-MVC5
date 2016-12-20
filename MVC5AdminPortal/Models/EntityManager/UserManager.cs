@@ -20,7 +20,10 @@ namespace MVC5AdminPortal.Models.EntityManager
                 su.RowModifiedDateTime = DateTime.Now;
 
                 db.SYSUsers.Add(su);
-                db.SaveChanges();                SYSUserProfile sup = new SYSUserProfile();                sup.SYSUserID = su.SYSUserID;
+                db.SaveChanges();
+
+                SYSUserProfile sup = new SYSUserProfile();
+                sup.SYSUserID = su.SYSUserID;
                 sup.FirstName = user.FirstName;
                 sup.LastName = user.LastName;
                 sup.Gender = user.Gender;
@@ -54,6 +57,18 @@ namespace MVC5AdminPortal.Models.EntityManager
             using (DemoDBEntities db = new DemoDBEntities())
             {
                 return db.SYSUsers.Any(o => o.LoginName.Equals(loginName));
+            }
+        }
+
+        public string GetUserPassword(string loginName)
+        {
+            using (DemoDBEntities db = new DemoDBEntities())
+            {
+                var user = db.SYSUsers.Where(o => o.LoginName.ToLower().Equals(loginName));
+                if (user.Any())
+                    return user.FirstOrDefault().PasswordEncryptedText;
+                else
+                    return string.Empty;
             }
         }
     }

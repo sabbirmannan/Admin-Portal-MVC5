@@ -5,5 +5,10 @@
 }
 
 <h2>Welcome</h2>
-<h2>Hi <b>@Context.User.Identity.Name</b>! Welcome to my first MVC 5 Web App!</h2>
+
+@Html.ActionLink("Signout", "SignOut", "Account")
+
+<h2>Hi <b>@Context.User.Identity.Name</b>! Welcome to my first MVC 5 Web App!
+</h2>
+
 
