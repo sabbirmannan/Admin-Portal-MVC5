@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿using MVC5AdminPortal.Security;
+using System.Web.Mvc;
 
 namespace MVC5AdminPortal.Controllers
 {
@@ -12,6 +13,17 @@ namespace MVC5AdminPortal.Controllers
 
         [Authorize]
         public ActionResult Welcome()
+        {
+            return View();
+        }
+
+        [AuthorizeRole("Admin")]
+        public ActionResult AdminOnly()
+        {
+            return View();
+        }
+
+        public ActionResult UnAuthorized()
         {
             return View();
         }
