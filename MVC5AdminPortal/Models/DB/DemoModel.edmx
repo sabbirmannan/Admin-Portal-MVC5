@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="DemoDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="DemoDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="LOOKUPRole">
           <Key>
             <PropertyRef Name="LOOKUPRoleID" />
@@ -16,6 +16,15 @@
           <Property Name="RowCreatedDateTime" Type="datetime" />
           <Property Name="RowModifiedSYSUserID" Type="int" Nullable="false" />
           <Property Name="RowModifiedDateTime" Type="datetime" />
+        </EntityType>
+        <EntityType Name="Message">
+          <Key>
+            <PropertyRef Name="MessageID" />
+          </Key>
+          <Property Name="MessageID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="SYSUserID" Type="int" />
+          <Property Name="MessageText" Type="varchar(max)" />
+          <Property Name="DatePosted" Type="datetime" />
         </EntityType>
         <EntityType Name="SYSUser">
           <Key>
@@ -94,6 +103,7 @@
         </Association>
         <EntityContainer Name="DemoDBModelStoreContainer">
           <EntitySet Name="LOOKUPRole" EntityType="Self.LOOKUPRole" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Message" EntityType="Self.Message" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SYSUser" EntityType="Self.SYSUser" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SYSUserProfile" EntityType="Self.SYSUserProfile" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SYSUserRole" EntityType="Self.SYSUserRole" Schema="dbo" store:Type="Tables" />
@@ -110,8 +120,7 @@
             <End Role="SYSUserRole" EntitySet="SYSUserRole" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="DemoDBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -225,7 +234,17 @@
             <End Role="SYSUser" EntitySet="SYSUsers" />
             <End Role="SYSUserRole" EntitySet="SYSUserRoles" />
           </AssociationSet>
+          <EntitySet Name="Messages" EntityType="DemoDBModel.Message" />
         </EntityContainer>
+        <EntityType Name="Message">
+          <Key>
+            <PropertyRef Name="MessageID" />
+          </Key>
+          <Property Name="MessageID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="SYSUserID" Type="Int32" />
+          <Property Name="MessageText" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="DatePosted" Type="DateTime" Precision="3" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -284,6 +303,16 @@
                 <ScalarProperty Name="RowCreatedDateTime" ColumnName="RowCreatedDateTime" />
                 <ScalarProperty Name="RowModifiedSYSUserID" ColumnName="RowModifiedSYSUserID" />
                 <ScalarProperty Name="RowModifiedDateTime" ColumnName="RowModifiedDateTime" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Messages">
+            <EntityTypeMapping TypeName="DemoDBModel.Message">
+              <MappingFragment StoreEntitySet="Message">
+                <ScalarProperty Name="DatePosted" ColumnName="DatePosted" />
+                <ScalarProperty Name="MessageText" ColumnName="MessageText" />
+                <ScalarProperty Name="SYSUserID" ColumnName="SYSUserID" />
+                <ScalarProperty Name="MessageID" ColumnName="MessageID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

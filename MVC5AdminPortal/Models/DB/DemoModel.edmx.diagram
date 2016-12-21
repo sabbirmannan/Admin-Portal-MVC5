@@ -12,6 +12,7 @@
         <AssociationConnector Association="DemoDBModel.FK__SYSUserRo__LOOKU__22AA2996" ManuallyRouted="false" />
         <AssociationConnector Association="DemoDBModel.FK__SYSUserPr__SYSUs__1CF15040" ManuallyRouted="false" />
         <AssociationConnector Association="DemoDBModel.FK__SYSUserRo__SYSUs__239E4DCF" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="DemoDBModel.Message" Width="1.5" PointX="0.75" PointY="0.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

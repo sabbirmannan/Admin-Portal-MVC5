@@ -330,6 +330,47 @@ namespace MVC5AdminPortal.Models.EntityManager
             return upv;
         }
 
+        public List<UserMessage> GetAllMessages()
+        {
+            using (var db = new DemoDBEntities())
+            {
+                var m = (from q in db.SYSUsers
+                         join q2 in db.Messages on q.SYSUserID equals q2.SYSUserID
+                         join q3 in db.SYSUserProfiles on q.SYSUserID equals q3.SYSUserID
+                         select new UserMessage
+                         {
+                             MessageID = q2.MessageID,
+                             SYSUserID = q.SYSUserID,
+                             FirstName = q3.FirstName,
+                             LastName = q3.LastName,
+                             MessageText = q2.MessageText,
+                             LogDate = q2.DatePosted
+                         }).OrderBy(o => o.LogDate);
+                return m.ToList();
+            }
+        }
+
+        public void AddMessage(int userId, string messageText)
+        {
+            using (var db = new DemoDBEntities())
+            {
+                var m = new Message();
+                m.MessageText = messageText;
+                m.SYSUserID = userId;
+                m.DatePosted = DateTime.UtcNow;
+                db.Messages.Add(m);
+                db.SaveChanges();
+            }
+        }
+
+        public int GetUserID(string loginName)
+        {
+            using (DemoDBEntities db = new DemoDBEntities())
+            {
+                return db.SYSUsers.SingleOrDefault(o => o.LoginName.Equals(loginName)).SYSUserID;
+            }
+        }
+
     }
 }
 

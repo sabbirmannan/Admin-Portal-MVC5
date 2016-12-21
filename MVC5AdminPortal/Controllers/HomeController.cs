@@ -8,9 +8,33 @@ namespace MVC5AdminPortal.Controllers
     public class HomeController : Controller
     {
         // GET: Home
+        [Authorize]
         public ActionResult Index()
         {
+            UserManager um = new UserManager();
+            ViewBag.UserID = um.GetUserID(User.Identity.Name);
             return View();
+        }
+
+        [Authorize]
+        public ActionResult ShoutBoxPartial()
+        {
+            return PartialView();
+        }
+
+        [Authorize]
+        public ActionResult SendMessage(int userId, string message)
+        {
+            UserManager um = new UserManager();
+            um.AddMessage(userId, message);
+            return Json(new { success = true });
+        }
+
+        [Authorize]
+        public ActionResult GetMessages()
+        {
+            UserManager um = new UserManager();
+            return Json(um.GetAllMessages(), JsonRequestBehavior.AllowGet);
         }
 
         [Authorize]

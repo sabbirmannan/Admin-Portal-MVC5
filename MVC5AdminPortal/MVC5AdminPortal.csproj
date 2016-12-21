@@ -213,6 +213,9 @@
     <Compile Include="Models\DB\LOOKUPRole.cs">
       <DependentUpon>DemoModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\DB\Message.cs">
+      <DependentUpon>DemoModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\DB\SYSUser.cs">
       <DependentUpon>DemoModel.tt</DependentUpon>
     </Compile>
@@ -228,6 +231,7 @@
     <Compile Include="Models\ViewModel\UserDataView.cs" />
     <Compile Include="Models\ViewModel\UserGender.cs" />
     <Compile Include="Models\ViewModel\UserLoginView.cs" />
+    <Compile Include="Models\ViewModel\UserMessage.cs" />
     <Compile Include="Models\ViewModel\UserModel.cs" />
     <Compile Include="Models\ViewModel\UserProfileView.cs" />
     <Compile Include="Models\ViewModel\UserRoles.cs" />
@@ -255,6 +259,7 @@
     <Content Include="Views\Home\UnAuthorized.cshtml" />
     <Content Include="Views\Home\ManageUserPartial.cshtml" />
     <Content Include="Views\Home\EditProfile.cshtml" />
+    <Content Include="Views\Home\ShoutBoxPartial.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

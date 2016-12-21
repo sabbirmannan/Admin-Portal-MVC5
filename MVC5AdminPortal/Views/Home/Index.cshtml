@@ -7,3 +7,6 @@
 <h2>Index</h2>
 No Account yet? @Html.ActionLink("Signup Now!", "SignUp", "Account")
 
+<input type="hidden" id="hidUserID" value="@ViewBag.UserID" />
+@Html.Action("ShoutBoxPartial", "Home")
+
