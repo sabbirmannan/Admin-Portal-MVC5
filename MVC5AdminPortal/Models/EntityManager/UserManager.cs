@@ -46,6 +46,7 @@ namespace MVC5AdminPortal.Models.EntityManager
                     sur.RowModifiedSYSUserID = user.SYSUserID > 0 ? user.SYSUserID : 1;
                     sur.RowCreatedDateTime = DateTime.Now;
                     sur.RowModifiedDateTime = DateTime.Now;
+
                     db.SYSUserRoles.Add(sur);
                     db.SaveChanges();
                 }
@@ -162,14 +163,14 @@ namespace MVC5AdminPortal.Models.EntityManager
             UserDataView udv = new UserDataView();
             List<UserProfileView> profiles = GetAllUserProfiles();
             List<LookupAvailableRole> roles = GetAllRoles();
-            int? userAssignedRoleID = 0, userID = 0;
+            int? userAssignedRoleId = 0, userId = 0;
             string userGender = string.Empty;
-            userID = GetUserId(loginName);
+            userId = GetUserId(loginName);
 
             using (DemoDBEntities db = new DemoDBEntities())
             {
-                userAssignedRoleID = db.SYSUserRoles.Where(o => o.SYSUserID == userID)?.FirstOrDefault().LOOKUPRoleID;
-                userGender = db.SYSUserProfiles.Where(o => o.SYSUserID == userID)?.FirstOrDefault().Gender;
+                userAssignedRoleId = db.SYSUserRoles.FirstOrDefault(o => o.SYSUserID == userId).LOOKUPRoleID;
+                userGender = db.SYSUserProfiles.FirstOrDefault(o => o.SYSUserID == userId).Gender;
             }
 
             List<Gender> genders = new List<Gender>();
@@ -178,7 +179,7 @@ namespace MVC5AdminPortal.Models.EntityManager
             udv.UserProfile = profiles;
             udv.UserRoles = new UserRoles
             {
-                SelectedRoleID = userAssignedRoleID,
+                SelectedRoleID = userAssignedRoleId,
                 UserRoleList = roles
             };
             udv.UserGender = new UserGender
@@ -188,6 +189,145 @@ namespace MVC5AdminPortal.Models.EntityManager
            genders
             };
             return udv;
+        }
+
+        public void UpdateUserAccount(UserProfileView user)
+        {
+            using (var db = new DemoDBEntities())
+            {
+                using (var dbContextTransaction = db.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        var su = db.SYSUsers.Find(user.SYSUserID);
+                        su.LoginName = user.LoginName;
+                        su.PasswordEncryptedText = user.Password;
+                        su.RowCreatedSYSUserID = user.SYSUserID;
+                        su.RowModifiedSYSUserID = user.SYSUserID;
+                        su.RowCreatedDateTime = DateTime.Now;
+                        su.RowModifiedDateTime = DateTime.Now;
+                        db.SaveChanges();                        var userProfile = db.SYSUserProfiles.Where(o => o.SYSUserID == user.SYSUserID);
+
+                        if (userProfile.Any())
+                        {
+                            var sup = userProfile.FirstOrDefault();
+                            sup.SYSUserID = su.SYSUserID;
+                            sup.FirstName = user.FirstName;
+                            sup.LastName = user.LastName;
+                            sup.Gender = user.Gender;
+                            sup.RowCreatedSYSUserID = user.SYSUserID;
+                            sup.RowModifiedSYSUserID = user.SYSUserID;
+                            sup.RowCreatedDateTime = DateTime.Now;
+                            sup.RowModifiedDateTime = DateTime.Now;                            db.SaveChanges();                        }
+
+                        if (user.LOOKUPRoleID > 0)
+                        {
+                            var userRole = db.SYSUserRoles.Where(o => o.SYSUserID == user.SYSUserID);
+                            SYSUserRole sur = null;
+                            if (userRole.Any())
+                            {
+                                sur = userRole.FirstOrDefault();
+                                sur.LOOKUPRoleID = user.LOOKUPRoleID;
+                                sur.SYSUserID = user.SYSUserID;
+                                sur.IsActive = true;
+                                sur.RowCreatedSYSUserID = user.SYSUserID;
+                                sur.RowModifiedSYSUserID = user.SYSUserID;
+                                sur.RowCreatedDateTime = DateTime.Now;
+                                sur.RowModifiedDateTime = DateTime.Now;
+                            }
+                            else
+                            {
+                                sur = new SYSUserRole
+                                {
+                                    LOOKUPRoleID = user.LOOKUPRoleID,
+                                    SYSUserID = user.SYSUserID,
+                                    IsActive = true,
+                                    RowCreatedSYSUserID = user.SYSUserID,
+                                    RowModifiedSYSUserID = user.SYSUserID,
+                                    RowCreatedDateTime = DateTime.Now,
+                                    RowModifiedDateTime = DateTime.Now
+                                };
+                                db.SYSUserRoles.Add(sur);
+                            }                            db.SaveChanges();
+                        }
+                        dbContextTransaction.Commit();                    }
+                    catch (Exception)
+                    {
+                        dbContextTransaction.Rollback();
+                    }
+                }
+            }
+        }
+
+        public void DeleteUser(int userId)
+        {
+            using (var db = new DemoDBEntities())
+            {
+                using (var dbContextTransaction = db.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        var sur = db.SYSUserRoles.Where(o => o.SYSUserID == userId);
+                        if (sur.Any())
+                        {
+                            db.SYSUserRoles.Remove(sur.FirstOrDefault());
+                            db.SaveChanges();
+                        }
+
+                        var sup = db.SYSUserProfiles.Where(o => o.SYSUserID == userId);
+                        if (sup.Any())
+                        {
+                            db.SYSUserProfiles.Remove(sup.FirstOrDefault());
+                            db.SaveChanges();
+                        }
+
+                        var su = db.SYSUsers.Where(o => o.SYSUserID == userId);
+                        if (su.Any())
+                        {
+                            db.SYSUsers.Remove(su.FirstOrDefault());
+                            db.SaveChanges();
+                        }
+
+                        dbContextTransaction.Commit();
+                    }
+                    catch (Exception)
+                    {
+                        dbContextTransaction.Rollback();
+                    }
+                }
+            }
+        }
+
+        public UserProfileView GetUserProfile(int userId)
+        {
+            var upv = new UserProfileView();
+            using (var db = new DemoDBEntities())
+            {
+                var user = db.SYSUsers.Find(userId);
+                if (user != null)
+                {
+                    upv.SYSUserID = user.SYSUserID;
+                    upv.LoginName = user.LoginName;
+                    upv.Password = user.PasswordEncryptedText;
+
+                    var sup = db.SYSUserProfiles.Find(userId);
+                    if (sup != null)
+                    {
+                        upv.FirstName = sup.FirstName;
+                        upv.LastName = sup.LastName;
+                        upv.Gender = sup.Gender;
+                    }
+                    var sur = db.SYSUserRoles.FirstOrDefault(o => o.SYSUserID == userId);
+                    if (sur != null)
+                    {
+                        upv.LOOKUPRoleID = sur.LOOKUPRoleID;
+                        upv.RoleName = sur.LOOKUPRole.RoleName;
+                        upv.IsRoleActive = sur.IsActive;
+                    }
+                }
+            }
+
+            return upv;
         }
 
     }

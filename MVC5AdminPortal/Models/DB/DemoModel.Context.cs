@@ -33,5 +33,7 @@ namespace MVC5AdminPortal.Models.DB
         public System.Data.Entity.DbSet<MVC5AdminPortal.Models.ViewModel.UserSignUpView> UserSignUpViews { get; set; }
 
         public System.Data.Entity.DbSet<MVC5AdminPortal.Models.ViewModel.UserLoginView> UserLoginViews { get; set; }
+
+        public System.Data.Entity.DbSet<MVC5AdminPortal.Models.ViewModel.UserProfileView> UserProfileViews { get; set; }
     }
 }
